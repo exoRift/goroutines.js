@@ -1,0 +1,16 @@
+{
+  "name": "js-routine",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "[ -d dist ] && rm -r dist; tsc --project tsconfig.build.json",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
