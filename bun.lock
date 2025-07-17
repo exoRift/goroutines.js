@@ -10,7 +10,7 @@
         "eslint-plugin-jsdoc": "^51.4.1",
       },
       "peerDependencies": {
-        "typescript": "^5",
+        "typescript": "^5.8.3",
       },
     },
   },
@@ -239,7 +239,7 @@
 
     "eslint-compat-utils": ["eslint-compat-utils@0.5.1", "", { "dependencies": { "semver": "^7.5.4" }, "peerDependencies": { "eslint": ">=6.0.0" } }, "sha512-3z3vFexKIEnjHE3zCMRo6fn/e44U7T1khUjg+Hp0ZQMCigh28rALD0nPFBcGZuiLC5rLZa2ubQHDRln09JfU2Q=="],
 
-    "eslint-config": ["eslint-config@github:exoRift/eslint-config#bec05e6", { "dependencies": { "neostandard": "^0.12.1", "typescript-eslint": "^8.27.0" }, "peerDependencies": { "eslint": "^9.23.0", "eslint-plugin-jsdoc": "^50.6.9" } }, "exoRift-eslint-config-bec05e6"],
+    "eslint-config": ["eslint-config@github:exoRift/eslint-config#88f23db", { "dependencies": { "neostandard": "^0.12.1", "typescript-eslint": "^8.27.0" }, "peerDependencies": { "eslint": "^9.23.0", "eslint-plugin-jsdoc": "^50.6.9" } }, "exoRift-eslint-config-88f23db"],
 
     "eslint-import-context": ["eslint-import-context@0.1.9", "", { "dependencies": { "get-tsconfig": "^4.10.1", "stable-hash-x": "^0.2.0" }, "peerDependencies": { "unrs-resolver": "^1.0.0" }, "optionalPeers": ["unrs-resolver"] }, "sha512-K9Hb+yRaGAGUbwjhFNHvSmmkZs9+zbuoe3kFQ4V1wYjrepUFYM2dZAfNtjbbj3qsPfUfsA68Bx/ICWQMi+C8Eg=="],
 

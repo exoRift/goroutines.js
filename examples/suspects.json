@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Alice",
+    "locations": {
+      "2025-07-17T18:00:00.000Z": "The Library",
+      "2025-07-17T20:03:11.952Z": "The Library",
+      "2025-07-17T22:00:00.000Z": "The Cafe"
+    }
+  },
+  {
+    "name": "Bob",
+    "locations": {
+      "2025-07-17T19:00:00.000Z": "The Gym",
+      "2025-07-17T20:03:11.952Z": "The Cafe",
+      "2025-07-17T21:30:00.000Z": "Home"
+    }
+  },
+  {
+    "name": "Charlie",
+    "locations": {
+      "2025-07-17T17:45:00.000Z": "The Park",
+      "2025-07-17T20:03:11.952Z": "The Park",
+      "2025-07-17T22:15:00.000Z": "The Bar"
+    }
+  },
+  {
+    "name": "Diana",
+    "locations": {
+      "2025-07-17T19:30:00.000Z": "The Museum",
+      "2025-07-17T20:03:11.952Z": "The Museum",
+      "2025-07-17T21:00:00.000Z": "The Restaurant"
+    }
+  },
+  {
+    "name": "Eve",
+    "locations": {
+      "2025-07-17T19:00:00.000Z": "The Mall",
+      "2025-07-17T20:03:11.952Z": "The Mall",
+      "2025-07-17T22:00:00.000Z": "The Library"
+    }
+  }
+]

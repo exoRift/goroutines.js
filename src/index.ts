@@ -57,13 +57,15 @@ type CoRoutine<T extends (...args: any) => any> =
  * Create a jsroutine (co-routine) function that runs on another thread
  * @see https://github.com/exoRift/js-routine
  * @param fn      The function
+ * @note Both synchronous and asynchronous functions can be used. The return value will always be a promise.
+ * @note Synchronous and asynchronous generators can also be used which will return async generator values. This is useful for data streaming
  * @param ctx     Global variables to be defined for the subprocess
- * @param imports Packages/files to import. { [PACKAGE_NAME]: [...IMPORTS] }
+ * @param imports Packages/files to import. `{ [PACKAGE_NAME]: [...IMPORTS] }`
  * @example
- * { // Anything can be renamed using `as`. `*` collects all named exports. `default` is the default export \
- *   fs: ['default as fs'], \
- *   echarts: ['* as echarts'], \
- *   express: ['default as express', 'Router', 'json'] \
+ * { // Anything can be renamed using `as`. `*` collects all named exports. `default` is the default export
+ *   fs: ['default as fs'],
+ *   echarts: ['* as echarts'],
+ *   express: ['default as express', 'Router', 'json']
  * }
  * @param kill    An abort signal to kill the process
  * @returns       A callable jsroutine function
@@ -101,6 +103,7 @@ export function go<T extends (...args: any) => void> (fn: T, ctx?: Record<string
       }
       if (unnamed || named.length) str += ' from'
       str += ` '${pkg}'`
+      if (pkg.endsWith('.json')) str += ' with { type: \'json\' }'
 
       return str
     })
@@ -163,11 +166,10 @@ ${handleRetCode}
 
   if (isGenerator) {
     // @ts-expect-error
-    return async function * _jsrExecuteGenerator (...args) {
+    return async function* _jsrExecuteGenerator (...args) {
       kill?.throwIfAborted()
 
       const worker = new Worker(objURL, {
-        name: 'test',
         workerData: {
           args,
           ctx
