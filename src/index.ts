@@ -16,7 +16,12 @@ type Library =
 type ImportRecord = Partial<Record<Library, Array<`default as ${string}` | `* as ${string}` | (string & {}) | `${string} as ${string}`>>>
 /* eslint-enable */
 
-function getPromisedMessage (worker: Worker): Promise<{ done: boolean, value: any }> {
+/**
+ * Get the next event from a worker as a promised value
+ * @param worker The worker
+ * @returns      The event value
+ */
+function getPromisedMessage<T> (worker: Worker): Promise<T> {
   return new Promise((resolve, reject) => {
     function onMessage (m: any): void {
       cleanup()
@@ -43,12 +48,27 @@ function getPromisedMessage (worker: Worker): Promise<{ done: boolean, value: an
   })
 }
 
-type JSRoutine<T extends (...args: any) => any> =
+type CoRoutine<T extends (...args: any) => any> =
   (...args: Parameters<T>) => ReturnType<T> extends Generator<infer U, infer R, infer N> | AsyncGenerator<infer U, infer R, infer N>
     ? AsyncGenerator<U, R, N>
     : Promise<Awaited<ReturnType<T>>>
 
-export function go<T extends (...args: any) => void> (fn: T, ctx?: Record<string, any> | null, imports?: ImportRecord | null, kill?: AbortSignal | null): JSRoutine<T> {
+/**
+ * Create a jsroutine (co-routine) function that runs on another thread
+ * @see https://github.com/exoRift/js-routine
+ * @param fn      The function
+ * @param ctx     Global variables to be defined for the subprocess
+ * @param imports Packages/files to import. { [PACKAGE_NAME]: [...IMPORTS] }
+ * @example
+ * { // Anything can be renamed using `as`. `*` collects all named exports. `default` is the default export \
+ *   fs: ['default as fs'], \
+ *   echarts: ['* as echarts'], \
+ *   express: ['default as express', 'Router', 'json'] \
+ * }
+ * @param kill    An abort signal to kill the process
+ * @returns       A callable jsroutine function
+ */
+export function go<T extends (...args: any) => void> (fn: T, ctx?: Record<string, any> | null, imports?: ImportRecord | null, kill?: AbortSignal | null): CoRoutine<T> {
   const isGenerator = ['GeneratorFunction', 'AsyncGeneratorFunction'].includes(fn.constructor.name)
 
   const statements = imports
@@ -156,7 +176,7 @@ ${handleRetCode}
 
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       while (true) {
-        const ret = await getPromisedMessage(worker)
+        const ret = await getPromisedMessage<{ done: boolean, value: any }>(worker)
         if (ret.done) return ret.value
         else {
           // @ts-expect-error
