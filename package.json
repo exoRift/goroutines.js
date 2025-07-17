@@ -1,8 +1,31 @@
 {
   "name": "js-routine",
+  "version": "1.0.0",
+  "description": "Inspired by Goroutines, this package adds an easy ability to trivially multithread (and potentially multiprocess) your code (supports NodeJS and Bun)",
+  "keywords": [
+    "jsroutines",
+    "coroutines",
+    "goroutines",
+    "concurrency",
+    "parallel",
+    "multithread",
+    "multiprocess",
+    "async"
+  ],
   "main": "dist/index.js",
   "module": "dist/index.js",
+  "files": [
+    "dist/"
+  ],
   "type": "module",
+  "author": {
+    "name": "exoRift",
+    "url": "https://github.com/exoRift"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/exoRift/js-routine.git"
+  },
   "scripts": {
     "build": "[ -d dist ] && rm -r dist; tsc --project tsconfig.build.json",
     "lint": "eslint ."
