@@ -30,7 +30,7 @@ console.log(result)
 ```
 
 The function will now run on a separate thread, leaving your main process unblocked
-> [!NOTE]
+> [!IMPORTANT]
 > Technically, we're still blocking the main thread in this example with a top-level await.
 > Make sure to read into how [promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) work
 
@@ -62,7 +62,12 @@ do {
 } while (!ret.done)
 ```
 
-Note that this functions exactly like an async generator.
+This will function exactly like an async generator.
+
+> [!TIP]
+> A regular array can be serialized just as well but results in cloning which is costly.
+> See: [supported data types](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#javascript_types)
+> See: [SharedArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer)
 
 You can iterate through it using the `for await` syntax
 ```ts
@@ -89,11 +94,8 @@ const guess = 'wrong password'
 const result = await guesser.next(guess)
 console.log(result.value)
 ```
-
-> [!NOTE]
-> A regular array can be serialized just as well but results in cloning which is costly.
-> See: [supported data types](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#javascript_types)
-> See: [SharedArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer)
+> [!TIP]
+> You can read more into the specifics of how generator functions pass values between yields [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator)
 
 ## Context and Imports
 If your function uses an out-of-scope variable, you can pass it to your coroutine via the context parameter
@@ -151,9 +153,12 @@ const suspect = await go(findPerp, {
   CRIME_DATE
 }, {
   './suspects.json': ['default as suspects'],
-  // Due to the behavior of the worker api, relative modules are usually resolved from the CWD, not the file directory. Bun exposes an API for module location resolution
+  // Due to the behavior of the worker api, relative modules are usually resolved from the CWD, not the file directory. Bun exposes an API for module location resolution:
   // [Bun.resolveSync('./suspects.json', import.meta.dirname)]: ['default as suspects'],
   util: ['styleText']
 })()
 console.log(suspect)
 ```
+> [!CAUTION]
+> Try to avoid passing large amounts of data to workers via context, function call parameters, or generator passing
+> If the dataset already exists in a file and isn't required in the main thread, import it in the coroutine.
