@@ -1,7 +1,7 @@
 {
   "name": "goroutines",
   "version": "1.0.0",
-  "description": "Inspired by Go Goroutines, this package adds an easy ability to trivially multithread (and potentially multiprocess) your code (supports NodeJS and Bun)",
+  "description": "Inspired by Go's Goroutines, this package adds an easy ability to trivially multithread (and potentially multiprocess) your code (supports NodeJS and Bun)",
   "keywords": [
     "jsroutines",
     "coroutines",

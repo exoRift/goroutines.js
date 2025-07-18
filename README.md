@@ -1,6 +1,6 @@
-# JS Routines
+# Goroutines.js
 
-Inspired by [Goroutines](https://go.dev/tour/concurrency/1), this package adds an easy ability to trivially multithread (and potentially multiprocess) your code (supports NodeJS and Bun)
+Inspired by Go's [Goroutines](https://go.dev/tour/concurrency/1), this package adds an easy ability to trivially multithread (and potentially multiprocess) your code (supports NodeJS and Bun)
 
 ## Installation
 ```
