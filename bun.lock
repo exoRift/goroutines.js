@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "js-routine",
+      "name": "goroutines",
       "devDependencies": {
         "@types/bun": "latest",
         "eslint": "^9.31.0",

@@ -4,7 +4,7 @@ Inspired by [Goroutines](https://go.dev/tour/concurrency/1), this package adds a
 
 ## Installation
 ```
-npm install js-routine
+npm install goroutines
 ```
 
 ## Getting Started
@@ -23,7 +23,7 @@ This is a heavy function that blocks the event loop. It can be made asynchronous
 
 Instead, wrap it into a coroutine
 ```ts
-import { go } from 'js-routine'
+import { go } from 'goroutines'
 
 const result = await go(fib)(40)
 console.log(result)

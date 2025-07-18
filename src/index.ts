@@ -55,7 +55,7 @@ type CoRoutine<T extends (...args: any) => any> =
 
 /**
  * Create a jsroutine (co-routine) function that runs on another thread
- * @see https://github.com/exoRift/js-routine
+ * @see https://github.com/exoRift/goroutines
  * @param fn      The function
  * @note Both synchronous and asynchronous functions can be used. The return value will always be a promise.
  * @note Synchronous and asynchronous generators can also be used which will return async generator values. This is useful for data streaming
