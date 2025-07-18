@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/exoRift/goroutines.git"
+    "url": "git+https://github.com/exoRift/goroutines.js.git"
   },
   "scripts": {
     "build": "[ -d dist ] && rm -r dist; tsc --project tsconfig.build.json",
