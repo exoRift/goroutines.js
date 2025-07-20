@@ -2,6 +2,11 @@
 
 Inspired by Go's [Goroutines](https://go.dev/tour/concurrency/1), this package adds an easy ability to trivially multithread (and potentially multiprocess) your code (supports NodeJS and Bun)
 
+### Note about concurrency
+Concurrency is a difficult thing to get right that should only be applied in circumstances where it's warranted. It's not recommended to use it for simple operations due to the bootstrap time of using workers. Be sure to benchmark your code using concurrency vs single-threaded.
+
+Be sure to also avoid fork-bombing. Most runtimes are optimized for recursion so expensive recursive functions should be run in their entirety on a thread, rather than running each recursion on its own thread (which can lead to a segfault)
+
 ## Installation
 ```
 npm install goroutines

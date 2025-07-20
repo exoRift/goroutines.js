@@ -50,6 +50,19 @@ type Goroutine<T extends (...args: any) => any> =
     ? AsyncGenerator<U, R, N>
     : Promise<Awaited<ReturnType<T>>>
 
+interface GoroutineOptions {
+  /** An abort signal to kill the process */
+  signal?: AbortSignal
+  /**
+   * A callback called after the worker has been created
+   * @warn Posting messages can lead to unexpected behavior
+   * @warn Expensive/slow operations can lead to unexpected behavior. If necessary and able, make function async
+   */
+  onStart?: (worker: Worker) => void | Promise<void>
+  /** A timeout that will kill the process if not completed within the time (resets on `.next()` for generators) */
+  timeoutMs?: number
+}
+
 /**
  * Create a goroutine function that runs on another thread
  * @see https://github.com/exoRift/goroutines.js
@@ -64,10 +77,10 @@ type Goroutine<T extends (...args: any) => any> =
  *   echarts: ['* as echarts'], // import echarts from 'echarts'
  *   express: ['default as express', 'Router', 'json as parseJson'] // import express, { router, json as parseJson } from 'express'
  * }
- * @param kill    An abort signal to kill the process
+ * @param options Additional goroutine options
  * @returns       A callable goroutine function
  */
-export function go<T extends (...args: any) => void> (fn: T, ctx?: Record<string, any> | null, imports?: ImportRecord | null, kill?: AbortSignal | null): Goroutine<T> {
+export function go<T extends (...args: any) => void> (fn: T, ctx?: Record<string, any> | null, imports?: ImportRecord | null, options?: GoroutineOptions | null): Goroutine<T> {
   const isGenerator = ['GeneratorFunction', 'AsyncGeneratorFunction'].includes(fn.constructor.name)
 
   const statements = imports
@@ -153,7 +166,7 @@ ${handleRetCode}
   if (isGenerator) {
     // @ts-expect-error
     return async function* _jsrExecuteGenerator (...args) {
-      kill?.throwIfAborted()
+      options?.signal?.throwIfAborted()
 
       const worker = new Worker(code, {
         eval: true,
@@ -162,10 +175,18 @@ ${handleRetCode}
           ctx
         }
       })
+      void options?.onStart?.(worker)
 
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       while (true) {
+        const timeout = options?.timeoutMs
+          ? setTimeout(() => {
+            worker.emit('error', new Error('Thread exceeded timeout'))
+            void worker.terminate()
+          }, options.timeoutMs)
+          : undefined
         const ret = await getPromisedMessage<{ done: boolean, value: any }>(worker)
+        clearTimeout(timeout)
         if (ret.done) return ret.value
         else {
           // @ts-expect-error
@@ -180,7 +201,7 @@ ${handleRetCode}
       return new Promise((resolve, reject) => {
         let terminated = false
         try {
-          kill?.throwIfAborted()
+          options?.signal?.throwIfAborted()
         } catch (err) {
           reject(err)
           return
@@ -193,27 +214,39 @@ ${handleRetCode}
             ctx
           }
         })
+        void options?.onStart?.(worker)
 
-        kill?.addEventListener('abort', () => {
+        const timeout = options?.timeoutMs
+          ? setTimeout(() => {
+            reject(new Error('Thread exceeeded timeout'))
+            terminated = true
+            void worker.terminate()
+          }, options.timeoutMs)
+          : undefined
+
+        options?.signal?.addEventListener('abort', () => {
           void worker.terminate()
           try {
-            kill.throwIfAborted()
+            options.signal?.throwIfAborted()
           } catch (err) {
             reject(err)
           }
         }, { once: true, passive: true })
 
         worker.once('message', (m) => {
+          if (timeout) clearTimeout(timeout)
           terminated = true
           resolve(m)
         })
         worker.once('error', (e) => {
+          if (timeout) clearTimeout(timeout)
           terminated = true
           reject(e)
           void worker.terminate()
         })
         worker.once('exit', (exitCode) => {
           if (terminated) return
+          if (timeout) clearTimeout(timeout)
           reject(new Error(`Process exited with code: ${exitCode}`))
         })
       })
