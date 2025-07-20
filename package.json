@@ -31,7 +31,7 @@
     "lint": "eslint ."
   },
   "devDependencies": {
-    "@types/bun": "latest",
+    "@types/bun": "^1.2.19",
     "eslint": "^9.31.0",
     "eslint-config": "github:exoRift/eslint-config",
     "eslint-plugin-jsdoc": "^51.4.1"

@@ -1,6 +1,3 @@
-import { writeFileSync, existsSync } from 'fs' // Node
-import { tmpdir } from 'os' // Node
-import { createHash } from 'crypto' // Node
 import {
   Worker
 } from 'worker_threads'
@@ -48,14 +45,14 @@ function getPromisedMessage<T> (worker: Worker): Promise<T> {
   })
 }
 
-type CoRoutine<T extends (...args: any) => any> =
+type Goroutine<T extends (...args: any) => any> =
   (...args: Parameters<T>) => ReturnType<T> extends Generator<infer U, infer R, infer N> | AsyncGenerator<infer U, infer R, infer N>
     ? AsyncGenerator<U, R, N>
     : Promise<Awaited<ReturnType<T>>>
 
 /**
- * Create a jsroutine (co-routine) function that runs on another thread
- * @see https://github.com/exoRift/goroutines
+ * Create a goroutine function that runs on another thread
+ * @see https://github.com/exoRift/goroutines.js
  * @param fn      The function
  * @note Both synchronous and asynchronous functions can be used. The return value will always be a promise.
  * @note Synchronous and asynchronous generators can also be used which will return async generator values. This is useful for data streaming
@@ -64,13 +61,13 @@ type CoRoutine<T extends (...args: any) => any> =
  * @example
  * { // Anything can be renamed using `as`. `*` collects all named exports. `default` is the default export
  *   fs: ['default as fs'],
- *   echarts: ['* as echarts'],
- *   express: ['default as express', 'Router', 'json']
+ *   echarts: ['* as echarts'], // import echarts from 'echarts'
+ *   express: ['default as express', 'Router', 'json as parseJson'] // import express, { router, json as parseJson } from 'express'
  * }
  * @param kill    An abort signal to kill the process
- * @returns       A callable jsroutine function
+ * @returns       A callable goroutine function
  */
-export function go<T extends (...args: any) => void> (fn: T, ctx?: Record<string, any> | null, imports?: ImportRecord | null, kill?: AbortSignal | null): CoRoutine<T> {
+export function go<T extends (...args: any) => void> (fn: T, ctx?: Record<string, any> | null, imports?: ImportRecord | null, kill?: AbortSignal | null): Goroutine<T> {
   const isGenerator = ['GeneratorFunction', 'AsyncGeneratorFunction'].includes(fn.constructor.name)
 
   const statements = imports
@@ -153,23 +150,13 @@ const _jsr = ${fn.toString()}
 ${handleRetCode}
 `
 
-  let objURL
-  if (typeof Bun === 'undefined') {
-    const hash = createHash('sha1').update(code).digest('hex')
-    objURL = `${tmpdir()}/${hash}.js`
-    const exists = existsSync(objURL)
-    if (!exists) writeFileSync(objURL, code, { encoding: 'utf-8' })
-  } else {
-    const blob = new Blob([code], { type: 'application/javascript' })
-    objURL = URL.createObjectURL(blob)
-  }
-
   if (isGenerator) {
     // @ts-expect-error
     return async function* _jsrExecuteGenerator (...args) {
       kill?.throwIfAborted()
 
-      const worker = new Worker(objURL, {
+      const worker = new Worker(code, {
+        eval: true,
         workerData: {
           args,
           ctx
@@ -199,7 +186,8 @@ ${handleRetCode}
           return
         }
 
-        const worker = new Worker(objURL, {
+        const worker = new Worker(code, {
+          eval: true,
           workerData: {
             args,
             ctx

@@ -21,7 +21,7 @@ console.log(resut)
 
 This is a heavy function that blocks the event loop. It can be made asynchronous with the `async`, but still runs on the same thread (JS is single-threaded) which can be taxing.
 
-Instead, wrap it into a coroutine
+Instead, wrap it into a goroutine
 ```ts
 import { go } from 'goroutines'
 
@@ -61,12 +61,16 @@ do {
   console.log(ret.value)
 } while (!ret.done)
 ```
+> [!NOTE]
+> If this function seems confusing, `yield` functions as a return without actually ending the function and `iter.next()` receives that value.
 
 This will function exactly like an async generator.
 
 > [!TIP]
 > A regular array can be serialized just as well but results in cloning which is costly.
-> See: [supported data types](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#javascript_types)
+>
+> See: [Supported data types](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#javascript_types)
+>
 > See: [SharedArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer)
 
 You can iterate through it using the `for await` syntax
@@ -98,7 +102,7 @@ console.log(result.value)
 > You can read more into the specifics of how generator functions pass values between yields [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator)
 
 ## Context and Imports
-If your function uses an out-of-scope variable, you can pass it to your coroutine via the context parameter
+If your function uses an out-of-scope variable, you can pass it to your goroutine via the context parameter
 
 ```ts
 import suspectdata from './suspects.json' with { type: 'json' }
@@ -161,4 +165,4 @@ console.log(suspect)
 ```
 > [!CAUTION]
 > Try to avoid passing large amounts of data to workers via context, function call parameters, or generator passing
-> If the dataset already exists in a file and isn't required in the main thread, import it in the coroutine.
+> If the dataset already exists in a file and isn't required in the main thread, import it in the goroutine.
