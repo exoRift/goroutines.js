@@ -218,7 +218,7 @@ ${handleRetCode}
 
         const timeout = options?.timeoutMs
           ? setTimeout(() => {
-            reject(new Error('Thread exceeeded timeout'))
+            reject(new Error('Thread exceeded timeout'))
             terminated = true
             void worker.terminate()
           }, options.timeoutMs)
